@@ -9,8 +9,6 @@ export const profile = {
   location: 'Bali, Indonesia',
   availability: 'Open to iOS roles: on-site, hybrid or remote, and happy to relocate.',
   email: 'muhammadsandy171@gmail.com',
-  phone: '+62 851 5973 5778',
-  phoneHref: 'https://wa.me/6285159735778',
   resume: '/M-Sandy-Prastyo-Resume.pdf',
   links: {
     linkedin: 'https://www.linkedin.com/in/muhammad-sandy-prastyo',

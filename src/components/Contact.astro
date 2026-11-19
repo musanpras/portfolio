@@ -5,7 +5,6 @@ const channels = [
   { label: 'LinkedIn', value: 'muhammad-sandy-prastyo', href: profile.links.linkedin },
   { label: 'GitHub', value: 'musanpras', href: profile.links.github },
   { label: 'App Store', value: 'Developer page', href: profile.links.appStore },
-  { label: 'WhatsApp', value: profile.phone, href: profile.phoneHref },
 ];
 ---
 
@@ -91,7 +90,7 @@ const channels = [
 
   @media (min-width: 760px) {
     .channels {
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 
     .channels li + li a {

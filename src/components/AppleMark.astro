@@ -1,5 +1,5 @@
 ---
-// Original apple-fruit mark (not Apple Inc.'s logo: no bite, has a stem).
+// White Apple logo on a dark tile, so it reads on both light and dark themes.
 interface Props {
   class?: string;
 }
@@ -7,24 +7,16 @@ const { class: className } = Astro.props;
 ---
 
 <svg class:list={['apple-mark', className]} viewBox="0 0 24 24" aria-hidden="true">
-  <path
-    class="body"
-    d="M12 7.4C10.6 6.4 8.9 6 7.3 6.5 4.5 7.4 3.3 10.5 3.9 13.7c.6 3.4 2.9 7 5.4 7.3 1 .1 1.7-.4 2.7-.4s1.7.5 2.7.4c2.5-.3 4.8-3.9 5.4-7.3.6-3.2-.6-6.3-3.4-7.2C15.1 6 13.4 6.4 12 7.4Z"
-  ></path>
-  <path class="leaf" d="M12.6 5.9c.1-2.1 1.8-3.5 4.2-3.4-.2 2.1-1.9 3.4-4.2 3.4Z"></path>
-  <path class="stem" d="M12 7.4c-.1-1.5.2-2.9 1-4.1" fill="none" stroke-width="1.2" stroke-linecap="round"></path>
+  <rect class="tile" width="24" height="24" rx="5.4"></rect>
+  <path class="logo" transform="translate(4.8 4.6) scale(0.6)" d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"></path>
 </svg>
 
 <style>
-  .apple-mark .body {
-    fill: var(--accent);
+  .apple-mark .tile {
+    fill: var(--tile);
   }
 
-  .apple-mark .leaf {
-    fill: var(--ink);
-  }
-
-  .apple-mark .stem {
-    stroke: var(--ink);
+  .apple-mark .logo {
+    fill: #ffffff;
   }
 </style>

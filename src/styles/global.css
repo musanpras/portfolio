@@ -8,6 +8,7 @@
   --accent: #d93b3b;
   --accent-ink: #b42a2a;
   --signal-off: #c6ccc4;
+  --tile: #142033;
 
   --font-sans: 'Schibsted Grotesk Variable', 'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
@@ -39,6 +40,7 @@
     --accent: #ff6461;
     --accent-ink: #ff8582;
     --signal-off: #2f3b53;
+    --tile: #26344f;
     color-scheme: dark;
   }
 }
@@ -52,6 +54,7 @@
   --accent: #ff6461;
   --accent-ink: #ff8582;
   --signal-off: #2f3b53;
+  --tile: #26344f;
   color-scheme: dark;
 }
 
