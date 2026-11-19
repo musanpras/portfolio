@@ -1,146 +1,123 @@
 ---
 import { profile } from '../data/profile';
-import AppleMark from './AppleMark.astro';
+
+const highlights = [
+  { value: '10M+', label: 'downloads of Tring! by Pegadaian, rebuilt in SwiftUI' },
+  { value: '2', label: 'apps live on the App Store' },
+  { value: '5+', label: 'years shipping mobile and web apps' },
+];
 ---
 
-<section class="hero wrap" id="top" aria-labelledby="hero-title">
-  <p class="status reveal" style="--i: 0">
-    <AppleMark class="mark" />
-    {profile.availability}
-  </p>
-
-  <h1 id="hero-title" class="reveal" style="--i: 1">
-    Native iOS apps that keep working when the signal drops.
-  </h1>
-
-  <div class="intro">
-    <p class="lead reveal" style="--i: 2">
-      I’m Sandy, an iOS engineer in Bali. I helped rebuild Pegadaian’s main app in SwiftUI, shipped two apps to
-      the App Store this year, and built a messenger that sends photos over LoRa radio where there is no cell
-      coverage.
-    </p>
-
-    <div class="actions reveal" style="--i: 3">
-      <a class="btn btn--solid" href="#work">See my work</a>
-      <a class="btn" href={profile.resume} download>
-        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"
-          ><path d="M10 3v10M5.5 8.5 10 13l4.5-4.5M4 16.5h12"></path></svg
-        >
-        Download résumé (PDF)
-      </a>
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <div class="wrap">
+    <p class="eyebrow rise" style="--i: 0">iOS Engineer in Bali</p>
+    <h1 id="hero-title" class="rise" style="--i: 1">{profile.name}</h1>
+    <p class="tagline rise" style="--i: 2">Native iOS apps that keep working when the signal drops.</p>
+    <div class="actions rise" style="--i: 3">
+      <a class="btn" href="#work">See my work</a>
+      <a class="more" href={profile.resume} download>Download résumé</a>
     </div>
   </div>
 
-  <dl class="facts reveal" style="--i: 4">
-    <div>
-      <dt>Tring! by Pegadaian</dt>
-      <dd>Part of the team that rebuilt it in native SwiftUI. 10M+ downloads on Google Play.</dd>
-    </div>
-    <div>
-      <dt>Two apps on the App Store</dt>
-      <dd>Tripzee and Ttery, built at Apple Developer Academy @ BINUS in 2026.</dd>
-    </div>
-    <div>
-      <dt>5+ years shipping</dt>
-      <dd>Mobile and web, from React Native and Flutter to Swift and on-device AI.</dd>
-    </div>
-  </dl>
+  <div class="wrap-wide">
+    <ul class="highlights rise" role="list" style="--i: 4">
+      {
+        highlights.map((h) => (
+          <li>
+            <p class="value">{h.value}</p>
+            <p class="label">{h.label}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
 </section>
 
 <style>
   .hero {
-    padding-top: clamp(3rem, 2rem + 6vw, 7.5rem);
-    padding-bottom: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+    padding-top: clamp(4.5rem, 3rem + 7vw, 9rem);
+    padding-bottom: clamp(3rem, 2rem + 4vw, 5.5rem);
+    text-align: center;
   }
 
-  .status {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--muted);
-    font-size: 0.95rem;
-    margin-bottom: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  .eyebrow {
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.3rem);
+    font-weight: 600;
+    color: #bf4800;
+    letter-spacing: 0.004em;
   }
 
-  .status :global(.mark) {
-    width: 16px;
-    height: 16px;
-    flex: none;
+  :global(:root.is-dark) .eyebrow {
+    color: #ff9f0a;
   }
 
   h1 {
-    font-size: var(--step-hero);
-    font-weight: 650;
-    letter-spacing: -0.042em;
-    line-height: 1;
-    max-width: 14.5ch;
+    margin-top: 0.4rem;
+    font-size: clamp(3rem, 1.8rem + 5.4vw, 5rem);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
   }
 
-  .intro {
-    display: grid;
-    gap: 1.75rem;
-    margin-top: clamp(1.75rem, 1rem + 2.5vw, 3rem);
-  }
-
-  .lead {
-    font-size: clamp(1.1rem, 1rem + 0.45vw, 1.33rem);
-    line-height: 1.5;
-    max-width: 36rem;
-    color: color-mix(in srgb, var(--ink) 82%, var(--paper));
+  .tagline {
+    margin: 1rem auto 0;
+    max-width: 30ch;
+    font-size: clamp(1.4rem, 1.1rem + 1.4vw, 2rem);
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: 0.002em;
+    color: var(--text-2);
+    text-wrap: balance;
   }
 
   .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+    margin-top: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+    font-size: 17px;
   }
 
-  @media (min-width: 900px) {
-    .intro {
-      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-      align-items: end;
-    }
-
-    .actions {
-      justify-content: flex-end;
-    }
-  }
-
-  .facts {
+  .highlights {
     display: grid;
-    gap: 1.5rem 2rem;
-    margin-top: clamp(3rem, 2rem + 4vw, 5.5rem);
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--rule);
+    gap: 12px;
+    margin-top: clamp(3.5rem, 2.5rem + 5vw, 6.5rem);
   }
 
-  @media (min-width: 720px) {
-    .facts {
+  @media (min-width: 760px) {
+    .highlights {
       grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
     }
   }
 
-  .facts dt {
-    font-weight: 650;
-    margin-bottom: 0.3rem;
+  .highlights li {
+    padding: clamp(1.4rem, 1rem + 2vw, 2.75rem) 1.5rem;
+    border-radius: var(--radius-tile);
+    background: var(--tile);
   }
 
-  .facts dd {
-    color: var(--muted);
-    font-size: 0.95rem;
-    max-width: 24rem;
+  .value {
+    font-size: clamp(2.75rem, 2rem + 2.6vw, 4rem);
+    font-weight: 600;
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    font-variant-numeric: tabular-nums;
   }
 
-  /* The one orchestrated moment on the page: the hero settles in on load. */
-  .reveal {
-    animation: rise 0.7s var(--ease) both;
-    animation-delay: calc(var(--i) * 90ms + 60ms);
+  .label {
+    margin: 0.5rem auto 0;
+    max-width: 18rem;
+    color: var(--text-2);
+    font-size: 17px;
+  }
+
+  /* One orchestrated entrance on load */
+  .rise {
+    animation: rise 1s var(--ease) both;
+    animation-delay: calc(var(--i) * 110ms + 80ms);
   }
 
   @keyframes rise {
     from {
       opacity: 0;
-      transform: translateY(14px);
+      transform: translateY(20px);
     }
   }
 </style>

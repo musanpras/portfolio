@@ -7,11 +7,8 @@
 
 <div class="demo" data-demo>
   <div class="demo-head">
-    <h4>Try the frame protocol</h4>
-    <p>
-      Pick what to send and Mora splits it into frames the way the app does: a 13-byte header and up to 169
-      bytes of payload each, sent one every 300 ms so the radio’s queue never overflows.
-    </p>
+    <h4>Try the protocol.</h4>
+    <p>Pick a message and watch Mora split it into radio frames.</p>
   </div>
 
   <div class="controls">
@@ -43,12 +40,12 @@
   <div class="readout" aria-live="polite">
     <p><span data-bytes>0</span><small>payload bytes</small></p>
     <p><span data-frames>0</span><small data-frames-label>frames</small></p>
-    <p><span data-air>0 s</span><small>to send at 300 ms per frame</small></p>
+    <p><span data-air>0 s</span><small>to send</small></p>
   </div>
 
   <p class="refusal" data-refusal hidden>
-    Refused. Photos and voice notes must go to one person: the repair layer expects a single receiver to report
-    missing chunks, so a broadcast photo would count as delivered the moment anyone had it.
+    Photos can only go to one person. Sent to everyone, a photo would count as delivered the moment anyone got
+    it.
   </p>
 
   <div class="frames-wrap" data-frames-wrap>
@@ -75,8 +72,8 @@
 <style>
   .demo {
     background: var(--surface);
-    border: 1px solid var(--rule);
-    border-radius: 20px;
+    border-radius: 22px;
+    text-align: left;
     padding: clamp(1.1rem, 0.8rem + 1.5vw, 1.75rem);
     display: grid;
     gap: 1.25rem;
@@ -84,8 +81,8 @@
   }
 
   .demo-head h4 {
-    font-size: var(--step-1);
-    letter-spacing: -0.02em;
+    font-size: 21px;
+    letter-spacing: 0.01em;
     margin: 0 0 0.35rem;
   }
 
@@ -121,7 +118,7 @@
     padding: 3px;
     gap: 2px;
     border-radius: 999px;
-    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    background: rgba(118, 118, 128, 0.12);
   }
 
   .seg label {
@@ -149,9 +146,13 @@
   }
 
   .seg input:checked + span {
-    background: var(--surface);
+    background: var(--tile-inner);
     color: var(--ink);
-    box-shadow: 0 0 0 1px var(--rule);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 0 0 0.5px rgba(0, 0, 0, 0.04);
+  }
+
+  :global(:root.is-dark) .seg input:checked + span {
+    background: #636366;
   }
 
   .seg input:focus-visible + span {
@@ -166,7 +167,7 @@
     padding: 0.85rem 1rem;
     border: 1px solid var(--rule);
     border-radius: 12px;
-    background: var(--paper);
+    background: var(--tile);
     color: var(--ink);
     font: inherit;
     font-size: 1rem;
@@ -198,7 +199,7 @@
   }
 
   .readout span {
-    font-size: var(--step-2);
+    font-size: 28px;
     font-weight: 650;
     letter-spacing: -0.02em;
     font-variant-numeric: tabular-nums;
@@ -212,11 +213,11 @@
   }
 
   .refusal {
-    color: var(--accent-ink);
+    color: var(--danger);
     font-size: 0.95rem;
     padding: 0.85rem 1rem;
     border-radius: 12px;
-    background: color-mix(in srgb, var(--accent) 9%, transparent);
+    background: color-mix(in srgb, var(--danger) 8%, transparent);
   }
 
   .frames-wrap[hidden] {
@@ -244,7 +245,7 @@
     padding: 0;
     border-radius: 7px;
     border: 1px solid var(--rule);
-    background: var(--paper);
+    background: var(--tile);
     font-family: var(--font-mono);
     font-size: 0.68rem;
     color: var(--muted);
@@ -477,10 +478,10 @@
       note.hidden = k === 'text';
       if (k === 'location')
         note.textContent =
-          'A location is always one frame: 24 bytes holding latitude, longitude, accuracy in metres and a timestamp.';
+          'A location always fits in one frame: 24 bytes.';
       if (k === 'image')
         note.textContent =
-          'Photos are downscaled and recompressed until the JPEG fits in 8 KB, from 480 px at quality 0.5 down to 128 px. If nothing fits, the app refuses rather than send.';
+          'Photos are compressed until they fit in 8 KB.';
 
       payload = buildPayload(k);
       const refused = k === 'image' && broadcast;
@@ -521,7 +522,7 @@
       const v = new DataView(f.buffer);
       const recipient = v.getUint8(3);
       const len = v.getUint8(12);
-      inspTitle.textContent = `Frame ${selected + 1} of ${frames.length}: ${f.length} bytes on the air`;
+      inspTitle.textContent = `Frame ${selected + 1} of ${frames.length}, ${f.length} bytes`;
       const rows: [string, string, number, number, string][] = [
         ['0', 'magic', 0, 1, 'Marks a Mora frame'],
         ['1', 'type', 1, 1, ['', 'text', 'location', '', 'image'][v.getUint8(1)] ?? ''],
@@ -562,13 +563,13 @@
         if (i > 0) buttons[i - 1].classList.replace('is-sending', 'is-sent');
         if (i === buttons.length) {
           stop();
-          progress.textContent = `Sent ${frames.length} of ${frames.length}. The bubble says “Sent”, not “Delivered”: nothing confirms a frame end to end.`;
+          progress.textContent = `Sent ${frames.length} of ${frames.length}.`;
           msgId = (msgId + 1) & 0xffff;
           return;
         }
         buttons[i].classList.add('is-sending');
         i++;
-        progress.textContent = `Sending frame ${i} of ${frames.length}, ${((i * PACE_MS) / 1000).toFixed(1)} s`;
+        progress.textContent = `Sending ${i} of ${frames.length}…`;
       };
       tick();
       timer = window.setInterval(tick, PACE_MS);

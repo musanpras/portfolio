@@ -47,6 +47,7 @@ const { label, shots } = Astro.props;
 
   .track {
     display: flex;
+    justify-content: safe center;
     gap: 14px;
     margin: 0;
     padding: 4px 4px 16px;
@@ -75,8 +76,8 @@ const { label, shots } = Astro.props;
     height: auto;
     aspect-ratio: 1242 / 2688;
     object-fit: cover;
-    border-radius: 18px;
-    border: 1px solid var(--rule);
+    border-radius: 22px;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--text) 6%, transparent);
     background: var(--surface);
     user-select: none;
     -webkit-user-drag: none;
@@ -85,32 +86,37 @@ const { label, shots } = Astro.props;
   .strip-nav {
     display: flex;
     gap: 0.5rem;
-    justify-content: flex-end;
-    margin-top: 0.25rem;
+    justify-content: center;
+    margin-top: 0.75rem;
   }
 
   .strip-nav button {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 999px;
-    border: 1px solid var(--rule);
-    background: transparent;
+    border: 0;
+    background: rgba(210, 210, 215, 0.64);
+    color: rgba(0, 0, 0, 0.56);
     cursor: pointer;
     transition:
-      border-color 0.2s var(--ease),
+      background-color 0.2s var(--ease),
       opacity 0.2s var(--ease);
   }
 
+  :global(:root.is-dark) .strip-nav button {
+    background: rgba(66, 66, 69, 0.72);
+    color: rgba(255, 255, 255, 0.8);
+  }
+
   .strip-nav button:hover {
-    border-color: var(--ink);
+    background: rgba(223, 223, 227, 0.7);
   }
 
   .strip-nav button:disabled {
-    opacity: 0.35;
+    opacity: 0.42;
     cursor: default;
-    border-color: var(--rule);
   }
 
   .strip-nav svg {

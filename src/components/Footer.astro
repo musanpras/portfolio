@@ -5,23 +5,29 @@ const year = new Date().getFullYear();
 
 <footer class="site-footer">
   <div class="wrap row">
-    <p>© {year} {profile.name}. Built with Astro, hosted on Vercel.</p>
+    <p>Copyright © {year} {profile.name}.</p>
     <a href="#top">Back to top</a>
   </div>
 </footer>
 
 <style>
   .site-footer {
-    border-top: 1px solid var(--rule);
-    padding-block: 2rem;
-    font-size: 0.9rem;
-    color: var(--muted);
+    background: var(--bg-alt);
+    color: var(--text-2);
+    font-size: 12px;
+    letter-spacing: -0.01em;
   }
 
   .row {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    gap: 0.75rem 2rem;
+    gap: 0.5rem 2rem;
+    padding-block: 1.25rem 2rem;
+    border-top: 1px solid var(--hair);
+  }
+
+  a {
+    color: var(--text);
   }
 </style>

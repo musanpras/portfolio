@@ -2,37 +2,26 @@
 import { experience } from '../data/profile';
 ---
 
-<section class="section" id="experience" aria-labelledby="experience-title">
-  <div class="wrap">
-    <div class="section-head">
-      <h2 id="experience-title">Experience</h2>
-      <p>
-        From game development and project management to web, React Native, Flutter and now native Swift. Most
-        recent first.
-      </p>
-    </div>
+<section class="section section--alt" id="experience" aria-labelledby="experience-title">
+  <div class="wrap section-intro" data-reveal>
+    <h2 id="experience-title" class="headline">Experience.</h2>
+    <p class="subhead">Five years, from games and web to native iOS.</p>
+  </div>
 
-    <ol class="roles" role="list">
+  <div class="wrap">
+    <ol class="roles" role="list" data-reveal>
       {
         experience.map((job) => (
           <li class="role">
-            <p class="when">
-              <time>{job.start}</time> to <time>{job.end}</time>
-            </p>
-            <div class="what">
-              <h3>{job.title}</h3>
-              <p class="where">
-                <strong>{job.company}</strong>
-                {job.companyNote && <span> ({job.companyNote})</span>}
-                <span class="muted"> in {job.location}</span>
-              </p>
-              <ul>
-                {job.points.map((point) => (
-                  <li>{point}</li>
-                ))}
-              </ul>
-              <p class="stack">{job.stack.join(', ')}</p>
+            <div class="who">
+              <h3>{job.company}</h3>
+              <p class="title">{job.title}</p>
             </div>
+            <p class="summary">{job.summary}</p>
+            <p class="when">
+              {job.start} to {job.end}
+              <span>{job.location}</span>
+            </p>
           </li>
         ))
       }
@@ -43,67 +32,56 @@ import { experience } from '../data/profile';
 <style>
   .roles {
     margin: 0;
-    display: grid;
+    border-radius: var(--radius-tile);
+    background: var(--bg);
+    padding-inline: clamp(1.25rem, 0.75rem + 2.5vw, 2.5rem);
   }
 
   .role {
     display: grid;
-    gap: 0.5rem 2rem;
-    padding-block: 2rem;
-    border-top: 1px solid var(--rule);
+    gap: 0.4rem 2rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--hair);
   }
 
   .role:first-child {
     border-top: 0;
-    padding-top: 0;
   }
 
-  @media (min-width: 860px) {
+  @media (min-width: 820px) {
     .role {
-      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+      grid-template-columns: minmax(0, 4fr) minmax(0, 6fr) minmax(0, 2.2fr);
+      align-items: baseline;
     }
   }
 
-  .when {
-    color: var(--muted);
-    font-size: 0.95rem;
-    font-variant-numeric: tabular-nums;
-    padding-top: 0.2rem;
-  }
-
-  .what {
-    max-width: 46rem;
-  }
-
   h3 {
-    font-size: var(--step-1);
-    letter-spacing: -0.02em;
+    font-size: 19px;
+    letter-spacing: 0.012em;
   }
 
-  .where {
-    margin-top: 0.25rem;
+  .title {
+    color: var(--text-2);
+    font-size: 15px;
   }
 
-  .where strong {
-    font-weight: 600;
+  .summary {
+    font-size: 17px;
   }
 
-  ul {
-    list-style: disc;
-    margin-top: 0.9rem;
-    padding-left: 1.1rem;
-    display: grid;
-    gap: 0.45rem;
-    color: color-mix(in srgb, var(--ink) 84%, var(--paper));
+  .when {
+    color: var(--text-2);
+    font-size: 14px;
+    font-variant-numeric: tabular-nums;
   }
 
-  ul li::marker {
-    color: var(--muted);
+  .when span {
+    display: block;
   }
 
-  .stack {
-    margin-top: 0.9rem;
-    font-size: 0.88rem;
-    color: var(--muted);
+  @media (min-width: 820px) {
+    .when {
+      text-align: right;
+    }
   }
 </style>

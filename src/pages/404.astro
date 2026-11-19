@@ -1,39 +1,27 @@
 ---
 import Base from '../layouts/Base.astro';
-import AppleMark from '../components/AppleMark.astro';
+import Header from '../components/Header.astro';
 ---
 
 <Base title="Page not found, M. Sandy Prastyo" noindex>
+  <Header />
   <main id="main" class="wrap nf">
-    <AppleMark class="mark" />
-    <h1>Nothing here.</h1>
-    <p>This page doesn’t exist, or it moved. The portfolio is one page, so everything is on the home page.</p>
-    <a class="btn btn--solid" href="/">Go to the home page</a>
+    <h1 class="headline">Page not found.</h1>
+    <p class="subhead">Everything lives on the home page.</p>
+    <p class="actions"><a class="btn" href="/">Go to the home page</a></p>
   </main>
 </Base>
 
 <style>
   .nf {
-    min-height: 100svh;
+    min-height: calc(100svh - 48px);
     display: grid;
     align-content: center;
-    justify-items: start;
-    gap: 1.25rem;
+    justify-items: center;
+    text-align: center;
   }
 
-  .nf :global(.mark) {
-    width: 44px;
-    height: 44px;
-  }
-
-  h1 {
-    font-size: var(--step-hero);
-    letter-spacing: -0.042em;
-    line-height: 1;
-  }
-
-  p {
-    color: var(--muted);
-    max-width: 30rem;
+  .actions {
+    margin-top: 2rem;
   }
 </style>

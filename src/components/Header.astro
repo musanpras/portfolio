@@ -1,18 +1,20 @@
 ---
-import AppleMark from './AppleMark.astro';
-
 const nav = [
-  { href: '#work', label: 'Work' },
-  { href: '#experience', label: 'Experience' },
-  { href: '#skills', label: 'Skills', wide: true },
-  { href: '#contact', label: 'Contact' },
+  { href: '/#work', label: 'Work' },
+  { href: '/#experience', label: 'Experience' },
+  { href: '/#skills', label: 'Skills', wide: true },
+  { href: '/#contact', label: 'Contact' },
 ];
 ---
 
-<header class="site-header" data-header>
-  <div class="wrap bar">
-    <a class="brand" href="#top" aria-label="Sandy Prastyo, back to top">
-      <AppleMark class="brand-mark" />
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="/#top" aria-label="Sandy Prastyo, back to top">
+      <svg class="logo" viewBox="0 0 24 24" aria-hidden="true">
+        <path
+          d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701"
+        ></path>
+      </svg>
       <span>Sandy Prastyo</span>
     </a>
 
@@ -44,90 +46,97 @@ const nav = [
 </header>
 
 <style>
+  /* Apple's global nav: a thin dark translucent bar with a white logo. */
   .site-header {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: color-mix(in srgb, var(--paper) 92%, transparent);
-    backdrop-filter: saturate(1.4) blur(10px);
-    -webkit-backdrop-filter: saturate(1.4) blur(10px);
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.25s var(--ease);
+    background: var(--nav);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
   }
 
-  .site-header.is-scrolled {
-    border-bottom-color: var(--rule);
+  @media (prefers-reduced-transparency: reduce) {
+    .site-header {
+      background: #161617;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
   }
 
   .bar {
     display: flex;
     align-items: center;
     gap: 1rem;
-    min-height: 64px;
+    max-width: calc(var(--max) + var(--gutter) * 2);
+    min-height: 48px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
   }
 
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 0.6rem;
-    font-weight: 650;
-    letter-spacing: -0.01em;
-    text-decoration: none;
+    gap: 0.55rem;
     margin-right: auto;
+    color: #f5f5f7;
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
     white-space: nowrap;
   }
 
-  .brand :global(.brand-mark) {
-    width: 20px;
-    height: 20px;
-    flex: none;
+  .brand:hover {
+    text-decoration: none;
+  }
+
+  .logo {
+    width: 16px;
+    height: 16px;
+    fill: #ffffff;
   }
 
   nav ul {
     display: flex;
-    gap: clamp(0.25rem, 1.5vw, 1.25rem);
+    gap: clamp(0.25rem, 2vw, 1.75rem);
   }
 
   nav a {
     display: inline-block;
-    padding: 0.45rem 0.35rem;
-    font-size: 0.95rem;
-    color: var(--muted);
-    text-decoration: none;
+    padding: 0.5rem 0.4rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 12px;
+    letter-spacing: -0.01em;
     transition: color 0.2s var(--ease);
   }
 
   nav a:hover,
   nav a[aria-current='true'] {
-    color: var(--ink);
-  }
-
-  nav a[aria-current='true'] {
-    text-decoration: underline;
-    text-decoration-color: var(--accent);
-    text-decoration-thickness: 2px;
-    text-underline-offset: 0.45em;
+    color: #ffffff;
+    text-decoration: none;
   }
 
   .theme-toggle {
     display: grid;
     place-items: center;
-    width: 40px;
-    height: 40px;
-    border: 1px solid var(--rule);
+    width: 32px;
+    height: 32px;
+    margin-right: -6px;
+    border: 0;
     border-radius: 999px;
     background: transparent;
+    color: rgba(255, 255, 255, 0.8);
     cursor: pointer;
-    transition: border-color 0.2s var(--ease);
+    transition: color 0.2s var(--ease);
   }
 
   .theme-toggle:hover {
-    border-color: var(--ink);
+    color: #ffffff;
   }
 
   .theme-toggle svg {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.7;
@@ -168,8 +177,9 @@ const nav = [
     const dark = isDark();
     root.classList.toggle('is-dark', dark);
     toggle?.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
-    const meta = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
-    meta.forEach((m) => (m.content = dark ? '#0d1525' : '#f1f3f0'));
+    document
+      .querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')
+      .forEach((m) => (m.content = dark ? '#000000' : '#ffffff'));
   }
 
   toggle?.addEventListener('click', () => {
@@ -184,29 +194,23 @@ const nav = [
   media.addEventListener('change', sync);
   sync();
 
-  // Header rule appears once the page scrolls.
-  const header = document.querySelector('[data-header]');
-  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
-  window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
-
   // Mark the nav link for the section in view.
   const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav]'));
-  const sections = links
-    .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href') || ''))
+  const targets = links
+    .map((a) => document.getElementById(a.hash.slice(1)))
     .filter((s): s is HTMLElement => !!s);
+  const top = document.getElementById('top');
+  if (top) targets.push(top);
 
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {
         if (!entry.isIntersecting) continue;
         const id = `#${entry.target.id}`;
-        links.forEach((a) => a.setAttribute('aria-current', String(a.getAttribute('href') === id)));
+        links.forEach((a) => a.setAttribute('aria-current', String(a.hash === id)));
       }
     },
     { rootMargin: '-45% 0px -50% 0px' },
   );
-  sections.forEach((s) => observer.observe(s));
-  const top = document.getElementById('top');
-  if (top) observer.observe(top);
+  targets.forEach((s) => observer.observe(s));
 </script>
