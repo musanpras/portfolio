@@ -1,0 +1,170 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  label: string;
+  shots: { src: ImageMetadata; alt: string }[];
+}
+
+const { label, shots } = Astro.props;
+---
+
+<div class="strip" data-strip>
+  <ul class="track" role="list" tabindex="0" aria-label={label} data-track>
+    {
+      shots.map((shot, i) => (
+        <li>
+          <Picture
+            src={shot.src}
+            alt={shot.alt}
+            widths={[260, 520, 780]}
+            sizes="(min-width: 900px) 260px, 46vw"
+            formats={['avif', 'webp']}
+            loading={i < 2 ? 'eager' : 'lazy'}
+            decoding="async"
+            draggable="false"
+          />
+        </li>
+      ))
+    }
+  </ul>
+  <div class="strip-nav">
+    <button type="button" data-dir="-1" aria-label={`Previous ${label}`}>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M12.5 4.5 7 10l5.5 5.5"></path></svg>
+    </button>
+    <button type="button" data-dir="1" aria-label={`Next ${label}`}>
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M7.5 4.5 13 10l-5.5 5.5"></path></svg>
+    </button>
+  </div>
+</div>
+
+<style>
+  .strip {
+    position: relative;
+    min-width: 0;
+  }
+
+  .track {
+    display: flex;
+    gap: 14px;
+    margin: 0;
+    padding: 4px 4px 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: thin;
+    scrollbar-color: var(--rule) transparent;
+    cursor: grab;
+    overscroll-behavior-x: contain;
+  }
+
+  .track.is-dragging {
+    cursor: grabbing;
+    user-select: none;
+    scroll-snap-type: none;
+  }
+
+  .track li {
+    flex: 0 0 auto;
+    width: min(46vw, 260px);
+    scroll-snap-align: start;
+  }
+
+  .track :global(img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1242 / 2688;
+    object-fit: cover;
+    border-radius: 18px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  .strip-nav {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.25rem;
+  }
+
+  .strip-nav button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--rule);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      border-color 0.2s var(--ease),
+      opacity 0.2s var(--ease);
+  }
+
+  .strip-nav button:hover {
+    border-color: var(--ink);
+  }
+
+  .strip-nav button:disabled {
+    opacity: 0.35;
+    cursor: default;
+    border-color: var(--rule);
+  }
+
+  .strip-nav svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-strip]').forEach((strip) => {
+    const track = strip.querySelector<HTMLElement>('[data-track]')!;
+    const [prev, next] = Array.from(strip.querySelectorAll<HTMLButtonElement>('[data-dir]'));
+    const step = () => (track.querySelector('li')?.getBoundingClientRect().width ?? 260) + 14;
+
+    const update = () => {
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+    };
+
+    strip.querySelectorAll<HTMLButtonElement>('[data-dir]').forEach((b) =>
+      b.addEventListener('click', () => track.scrollBy({ left: Number(b.dataset.dir) * step(), behavior: 'smooth' })),
+    );
+    track.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    update();
+
+    // Drag to scroll with a mouse; touch and trackpads already scroll natively.
+    let startX = 0;
+    let startLeft = 0;
+    let dragging = false;
+    track.addEventListener('pointerdown', (e) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      dragging = true;
+      startX = e.clientX;
+      startLeft = track.scrollLeft;
+      track.setPointerCapture(e.pointerId);
+      track.classList.add('is-dragging');
+    });
+    track.addEventListener('pointermove', (e) => {
+      if (dragging) track.scrollLeft = startLeft - (e.clientX - startX);
+    });
+    const end = () => {
+      if (!dragging) return;
+      dragging = false;
+      track.classList.remove('is-dragging');
+      const i = Math.round(track.scrollLeft / step());
+      track.scrollTo({ left: i * step(), behavior: 'smooth' });
+    };
+    track.addEventListener('pointerup', end);
+    track.addEventListener('pointercancel', end);
+  });
+</script>

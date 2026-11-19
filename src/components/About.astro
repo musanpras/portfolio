@@ -1,0 +1,61 @@
+---
+import { profile } from '../data/profile';
+---
+
+<section class="section" id="about" aria-labelledby="about-title">
+  <div class="wrap grid">
+    <h2 id="about-title">About</h2>
+    <div class="body">
+      {profile.summary.map((para, i) => <p class:list={{ first: i === 0 }}>{para}</p>)}
+    </div>
+    <dl class="quick">
+      <div><dt>Focus</dt><dd>{profile.focus}</dd></div>
+      <div><dt>Based in</dt><dd>{profile.location}</dd></div>
+      <div><dt>Working style</dt><dd>On-site, hybrid or remote</dd></div>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .grid {
+    display: grid;
+    gap: 1.5rem 3rem;
+  }
+
+  @media (min-width: 960px) {
+    .grid {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 6fr) minmax(0, 3fr);
+    }
+  }
+
+  h2 {
+    font-size: var(--step-3);
+    letter-spacing: -0.03em;
+  }
+
+  .body {
+    display: grid;
+    gap: 1rem;
+    max-width: 40rem;
+    color: color-mix(in srgb, var(--ink) 84%, var(--paper));
+  }
+
+  .body .first {
+    font-size: var(--step-1);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+
+  .quick {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    font-size: 0.95rem;
+  }
+
+  .quick dt {
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>

@@ -1,0 +1,219 @@
+---
+const nav = [
+  { href: '#work', label: 'Work' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#skills', label: 'Skills', wide: true },
+  { href: '#contact', label: 'Contact' },
+];
+---
+
+<header class="site-header" data-header>
+  <div class="wrap bar">
+    <a class="brand" href="#top" aria-label="Sandy Prastyo, back to top">
+      <svg class="brand-mark" viewBox="0 0 22 16" aria-hidden="true">
+        <rect x="0" y="10" width="4" height="6" rx="1"></rect>
+        <rect x="6" y="6.5" width="4" height="9.5" rx="1"></rect>
+        <rect x="12" y="3" width="4" height="13" rx="1"></rect>
+        <rect class="hot" x="18" y="0" width="4" height="16" rx="1"></rect>
+      </svg>
+      <span>Sandy Prastyo</span>
+    </a>
+
+    <nav aria-label="Sections">
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li class:list={{ wide: item.wide }}>
+              <a href={item.href} data-nav>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark theme">
+      <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"
+        ><circle cx="12" cy="12" r="4.2"></circle><path
+          d="M12 2.5v2.2M12 19.3v2.2M4.6 4.6l1.6 1.6M17.8 17.8l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.6 19.4l1.6-1.6M17.8 6.2l1.6-1.6"
+        ></path></svg
+      >
+      <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"
+        ><path d="M20 14.6A8.2 8.2 0 0 1 9.4 4a8.2 8.2 0 1 0 10.6 10.6Z"></path></svg
+      >
+    </button>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in srgb, var(--paper) 92%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.25s var(--ease);
+  }
+
+  .site-header.is-scrolled {
+    border-bottom-color: var(--rule);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 64px;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    margin-right: auto;
+    white-space: nowrap;
+  }
+
+  .brand-mark {
+    width: 22px;
+    height: 16px;
+    fill: var(--ink);
+  }
+
+  .brand-mark .hot {
+    fill: var(--accent);
+  }
+
+  nav ul {
+    display: flex;
+    gap: clamp(0.25rem, 1.5vw, 1.25rem);
+  }
+
+  nav a {
+    display: inline-block;
+    padding: 0.45rem 0.35rem;
+    font-size: 0.95rem;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s var(--ease);
+  }
+
+  nav a:hover,
+  nav a[aria-current='true'] {
+    color: var(--ink);
+  }
+
+  nav a[aria-current='true'] {
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.45em;
+  }
+
+  .theme-toggle {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    transition: border-color 0.2s var(--ease);
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--ink);
+  }
+
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+  }
+
+  .theme-toggle .moon {
+    display: none;
+  }
+
+  :global(:root.is-dark) .theme-toggle .sun {
+    display: none;
+  }
+
+  :global(:root.is-dark) .theme-toggle .moon {
+    display: block;
+  }
+
+  @media (max-width: 560px) {
+    .wide {
+      display: none;
+    }
+
+    .brand span {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const toggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const media = window.matchMedia('(prefers-color-scheme: dark)');
+
+  const isDark = () => (root.dataset.theme ? root.dataset.theme === 'dark' : media.matches);
+
+  function sync() {
+    const dark = isDark();
+    root.classList.toggle('is-dark', dark);
+    toggle?.setAttribute('aria-label', dark ? 'Switch to light theme' : 'Switch to dark theme');
+    const meta = document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]');
+    meta.forEach((m) => (m.content = dark ? '#0d1525' : '#f1f3f0'));
+  }
+
+  toggle?.addEventListener('click', () => {
+    const next = isDark() ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {}
+    sync();
+  });
+
+  media.addEventListener('change', sync);
+  sync();
+
+  // Header rule appears once the page scrolls.
+  const header = document.querySelector('[data-header]');
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 8);
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  // Mark the nav link for the section in view.
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-nav]'));
+  const sections = links
+    .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href') || ''))
+    .filter((s): s is HTMLElement => !!s);
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const id = `#${entry.target.id}`;
+        links.forEach((a) => a.setAttribute('aria-current', String(a.getAttribute('href') === id)));
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  sections.forEach((s) => observer.observe(s));
+  const top = document.getElementById('top');
+  if (top) observer.observe(top);
+</script>

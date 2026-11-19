@@ -1,0 +1,27 @@
+---
+import { profile } from '../data/profile';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="wrap row">
+    <p>© {year} {profile.name}. Built with Astro, hosted on Vercel.</p>
+    <a href="#top">Back to top</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--rule);
+    padding-block: 2rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+  }
+
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+  }
+</style>

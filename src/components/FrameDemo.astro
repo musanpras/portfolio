@@ -1,0 +1,593 @@
+---
+// An interactive model of Mora's BLE frame protocol, using the real numbers
+// from the project's protocol spec: a 13-byte little-endian header, 169 payload
+// bytes per frame (what fits in an iOS notification at a 185-byte MTU), one
+// frame every 300 ms, and media capped at 8 KB and never broadcast.
+---
+
+<div class="demo" data-demo>
+  <div class="demo-head">
+    <h4>Try the frame protocol</h4>
+    <p>
+      Pick what to send and Mora splits it into frames the way the app does: a 13-byte header and up to 169
+      bytes of payload each, sent one every 300 ms so the radio’s queue never overflows.
+    </p>
+  </div>
+
+  <div class="controls">
+    <fieldset>
+      <legend>Message</legend>
+      <div class="seg">
+        <label><input type="radio" name="kind" value="text" checked /> <span>Text</span></label>
+        <label><input type="radio" name="kind" value="location" /> <span>Location</span></label>
+        <label><input type="radio" name="kind" value="image" /> <span>Photo, 8 KB</span></label>
+      </div>
+    </fieldset>
+    <fieldset>
+      <legend>Send to</legend>
+      <div class="seg">
+        <label><input type="radio" name="to" value="all" checked /> <span>Everyone</span></label>
+        <label><input type="radio" name="to" value="peer" /> <span>One person</span></label>
+      </div>
+    </fieldset>
+  </div>
+
+  <label class="text-field" data-text-field>
+    <span class="visually-hidden">Message text</span>
+    <textarea data-text name="message" rows="3" maxlength="1200" autocomplete="off" spellcheck="false"
+      >Need water and blankets at Pos 3, Kintamani. Four people here, one with a sprained ankle. We can walk down at first light if the trail is clear. Battery at 20%, so text only, no voice notes.</textarea
+    >
+  </label>
+  <p class="payload-note" data-payload-note hidden></p>
+
+  <div class="readout" aria-live="polite">
+    <p><span data-bytes>0</span><small>payload bytes</small></p>
+    <p><span data-frames>0</span><small data-frames-label>frames</small></p>
+    <p><span data-air>0 s</span><small>to send at 300 ms per frame</small></p>
+  </div>
+
+  <p class="refusal" data-refusal hidden>
+    Refused. Photos and voice notes must go to one person: the repair layer expects a single receiver to report
+    missing chunks, so a broadcast photo would count as delivered the moment anyone had it.
+  </p>
+
+  <div class="frames-wrap" data-frames-wrap>
+    <ol class="frames" role="list" data-frame-list aria-label="Frames"></ol>
+    <div class="send-row">
+      <button class="btn btn--solid" type="button" data-send>Send</button>
+      <p class="progress" data-progress role="status"></p>
+    </div>
+
+    <div class="inspector" data-inspector>
+      <p class="inspector-title" data-inspector-title>Frame 1</p>
+      <table>
+        <caption class="visually-hidden">Header fields of the selected frame</caption>
+        <thead>
+          <tr><th scope="col">Bytes</th><th scope="col">Field</th><th scope="col">Hex</th><th scope="col">Means</th></tr>
+        </thead>
+        <tbody data-fields></tbody>
+      </table>
+      <p class="payload-hex"><span class="muted">payload</span> <code data-payload-hex></code></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .demo {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 20px;
+    padding: clamp(1.1rem, 0.8rem + 1.5vw, 1.75rem);
+    display: grid;
+    gap: 1.25rem;
+    min-width: 0;
+  }
+
+  .demo-head h4 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+    margin: 0 0 0.35rem;
+  }
+
+  .demo-head p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 38rem;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+  }
+
+  fieldset {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 0;
+  }
+
+  legend {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
+    padding: 0;
+  }
+
+  .seg {
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: 3px;
+    gap: 2px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+  }
+
+  .seg label {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .seg input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .seg span {
+    display: block;
+    padding: 0.42rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    color: var(--muted);
+    transition:
+      background-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  .seg input:checked + span {
+    background: var(--surface);
+    color: var(--ink);
+    box-shadow: 0 0 0 1px var(--rule);
+  }
+
+  .seg input:focus-visible + span {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+
+  textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 5.5rem;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--ink);
+  }
+
+  .payload-note {
+    font-size: 0.95rem;
+    color: var(--muted);
+    padding: 0.85rem 1rem;
+    border: 1px dashed var(--rule);
+    border-radius: 12px;
+  }
+
+  .readout {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .readout p {
+    display: grid;
+    gap: 0.1rem;
+  }
+
+  .readout span {
+    font-size: var(--step-2);
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .readout small {
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.3;
+  }
+
+  .refusal {
+    color: var(--accent-ink);
+    font-size: 0.95rem;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--accent) 9%, transparent);
+  }
+
+  .frames-wrap[hidden] {
+    display: none;
+  }
+
+  .frames-wrap {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .frames {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .frames :global(button) {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 7px;
+    border: 1px solid var(--rule);
+    background: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    color: var(--muted);
+    cursor: pointer;
+    overflow: hidden;
+    transition:
+      background-color 0.25s var(--ease),
+      border-color 0.2s var(--ease),
+      color 0.2s var(--ease);
+  }
+
+  /* fill height shows how full the frame's payload is */
+  .frames :global(button)::before {
+    content: '';
+    position: absolute;
+    inset: auto 0 0 0;
+    height: var(--fill, 100%);
+    background: color-mix(in srgb, var(--ink) 9%, transparent);
+  }
+
+  .frames :global(button span) {
+    position: relative;
+  }
+
+  .frames :global(button:hover) {
+    border-color: var(--ink);
+  }
+
+  .frames :global(button[aria-pressed='true']) {
+    border-color: var(--ink);
+    color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  .frames :global(button.is-sent) {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  .frames :global(button.is-sent)::before {
+    background: transparent;
+  }
+
+  .frames :global(button.is-sending) {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .send-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+
+  .progress {
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .inspector {
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    min-width: 0;
+  }
+
+  .inspector-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+  }
+
+  th {
+    text-align: left;
+    font-weight: 500;
+    color: var(--muted);
+    padding: 0.3rem 0.5rem 0.3rem 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  tbody :global(td) {
+    padding: 0.32rem 0.5rem 0.32rem 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--rule) 60%, transparent);
+    vertical-align: top;
+  }
+
+  tbody :global(td:nth-child(1)),
+  tbody :global(td:nth-child(3)) {
+    font-family: var(--font-mono);
+    white-space: nowrap;
+  }
+
+  tbody :global(td:nth-child(1)) {
+    color: var(--muted);
+  }
+
+  tbody :global(td:nth-child(2)) {
+    font-family: var(--font-mono);
+  }
+
+  tbody :global(td:nth-child(3)) {
+    color: var(--accent-ink);
+  }
+
+  @media (max-width: 520px) {
+    th:nth-child(1),
+    tbody :global(td:nth-child(1)) {
+      display: none;
+    }
+  }
+
+  .payload-hex {
+    margin-top: 0.75rem;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+  }
+
+  .payload-hex code {
+    font-family: var(--font-mono);
+  }
+</style>
+
+<script>
+  const HEADER = 13;
+  const CHUNK = 169; // 185-byte MTU, 182 usable in a notification, minus the header
+  const PACE_MS = 300;
+  const MEDIA_CAP = 8 * 1024;
+  const SENDER = 0x2a;
+  const PEER = 0x17;
+  const TYPES = { text: 1, location: 2, image: 4 } as const;
+  type Kind = keyof typeof TYPES;
+
+  const root = document.querySelector<HTMLElement>('[data-demo]');
+  if (root) init(root);
+
+  function init(el: HTMLElement) {
+    const q = <T extends Element>(s: string) => el.querySelector<T>(s)!;
+    const textField = q<HTMLElement>('[data-text-field]');
+    const text = q<HTMLTextAreaElement>('[data-text]');
+    const note = q<HTMLElement>('[data-payload-note]');
+    const bytesOut = q<HTMLElement>('[data-bytes]');
+    const framesOut = q<HTMLElement>('[data-frames]');
+    const framesLabel = q<HTMLElement>('[data-frames-label]');
+    const airOut = q<HTMLElement>('[data-air]');
+    const refusal = q<HTMLElement>('[data-refusal]');
+    const wrap = q<HTMLElement>('[data-frames-wrap]');
+    const list = q<HTMLOListElement>('[data-frame-list]');
+    const send = q<HTMLButtonElement>('[data-send]');
+    const progress = q<HTMLElement>('[data-progress]');
+    const inspTitle = q<HTMLElement>('[data-inspector-title]');
+    const fields = q<HTMLTableSectionElement>('[data-fields]');
+    const payloadHex = q<HTMLElement>('[data-payload-hex]');
+
+    let msgId = 0x0131;
+    let payload: Uint8Array = new Uint8Array();
+    let frames: Uint8Array[] = [];
+    let selected = 0;
+    let timer: number | undefined;
+
+    const kind = () => (el.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value ?? 'text') as Kind;
+    const toAll = () => el.querySelector<HTMLInputElement>('input[name="to"]:checked')?.value !== 'peer';
+
+    function buildPayload(k: Kind): Uint8Array {
+      if (k === 'text') return new TextEncoder().encode(text.value);
+      if (k === 'location') {
+        // double lat, double lon, float accuracyM, uint32 epochSec, little-endian
+        const buf = new ArrayBuffer(24);
+        const v = new DataView(buf);
+        v.setFloat64(0, -8.2425, true);
+        v.setFloat64(8, 115.3337, true);
+        v.setFloat32(16, 12, true);
+        v.setUint32(20, Math.floor(Date.now() / 1000), true);
+        return new Uint8Array(buf);
+      }
+      // A stand-in for an 8 KB JPEG: starts with the JPEG SOI marker.
+      const img = new Uint8Array(MEDIA_CAP);
+      let seed = 7;
+      for (let i = 0; i < img.length; i++) {
+        seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+        img[i] = seed >> 16;
+      }
+      img.set([0xff, 0xd8, 0xff, 0xe0], 0);
+      return img;
+    }
+
+    function encode(p: Uint8Array, k: Kind, recipient: number): Uint8Array[] {
+      const count = Math.max(1, Math.ceil(p.length / CHUNK));
+      const out: Uint8Array[] = [];
+      for (let i = 0; i < count; i++) {
+        const part = p.subarray(i * CHUNK, (i + 1) * CHUNK);
+        const f = new Uint8Array(HEADER + part.length);
+        const v = new DataView(f.buffer);
+        v.setUint8(0, 0xa7);
+        v.setUint8(1, TYPES[k]);
+        v.setUint8(2, SENDER);
+        v.setUint8(3, recipient);
+        v.setUint16(4, msgId, true);
+        v.setUint16(6, i, true);
+        v.setUint16(8, count, true);
+        v.setUint16(10, p.length, true);
+        v.setUint8(12, part.length);
+        f.set(part, HEADER);
+        out.push(f);
+      }
+      return out;
+    }
+
+    const hex = (bytes: ArrayLike<number>) =>
+      Array.from(bytes, (b) => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+
+    function stop() {
+      if (timer) window.clearInterval(timer);
+      timer = undefined;
+      send.textContent = 'Send';
+    }
+
+    function render() {
+      stop();
+      const k = kind();
+      const broadcast = toAll();
+      textField.hidden = k !== 'text';
+      note.hidden = k === 'text';
+      if (k === 'location')
+        note.textContent =
+          'A location is always one frame: 24 bytes holding latitude, longitude, accuracy in metres and a timestamp.';
+      if (k === 'image')
+        note.textContent =
+          'Photos are downscaled and recompressed until the JPEG fits in 8 KB, from 480 px at quality 0.5 down to 128 px. If nothing fits, the app refuses rather than send.';
+
+      payload = buildPayload(k);
+      const refused = k === 'image' && broadcast;
+      frames = payload.length && !refused ? encode(payload, k, broadcast ? 0xff : PEER) : [];
+
+      bytesOut.textContent = payload.length.toLocaleString('en-US');
+      framesOut.textContent = String(frames.length);
+      framesLabel.textContent = frames.length === 1 ? 'frame' : 'frames';
+      airOut.textContent = `${((frames.length * PACE_MS) / 1000).toFixed(1)} s`;
+      refusal.hidden = !refused;
+      wrap.hidden = frames.length === 0;
+      send.disabled = frames.length === 0;
+      progress.textContent = '';
+
+      list.replaceChildren(
+        ...frames.map((f, i) => {
+          const li = document.createElement('li');
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.dataset.index = String(i);
+          b.setAttribute('aria-label', `Frame ${i + 1} of ${frames.length}, ${f.length - HEADER} payload bytes`);
+          b.style.setProperty('--fill', `${Math.round(((f.length - HEADER) / CHUNK) * 100)}%`);
+          const s = document.createElement('span');
+          s.textContent = String(i + 1);
+          b.append(s);
+          li.append(b);
+          return li;
+        }),
+      );
+      select(0);
+    }
+
+    function select(i: number) {
+      if (!frames.length) return;
+      selected = Math.min(i, frames.length - 1);
+      list.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-pressed', String(j === selected)));
+      const f = frames[selected];
+      const v = new DataView(f.buffer);
+      const recipient = v.getUint8(3);
+      const len = v.getUint8(12);
+      inspTitle.textContent = `Frame ${selected + 1} of ${frames.length}: ${f.length} bytes on the air`;
+      const rows: [string, string, number, number, string][] = [
+        ['0', 'magic', 0, 1, 'Marks a Mora frame'],
+        ['1', 'type', 1, 1, ['', 'text', 'location', '', 'image'][v.getUint8(1)] ?? ''],
+        ['2', 'senderId', 2, 1, `Phone ${v.getUint8(2)}`],
+        ['3', 'recipientId', 3, 1, recipient === 0xff ? 'Everyone in range' : `Phone ${recipient}`],
+        ['4–5', 'msgId', 4, 2, `Message ${v.getUint16(4, true)}`],
+        ['6–7', 'chunkIndex', 6, 2, `Chunk ${v.getUint16(6, true)} (0-based)`],
+        ['8–9', 'chunkCount', 8, 2, `${v.getUint16(8, true)} in total`],
+        ['10–11', 'totalLen', 10, 2, `${v.getUint16(10, true).toLocaleString('en-US')} bytes across all chunks`],
+        ['12', 'payloadLen', 12, 1, `${len} bytes in this frame`],
+      ];
+      fields.replaceChildren(
+        ...rows.map(([off, name, start, size, means]) => {
+          const tr = document.createElement('tr');
+          for (const val of [off, name, hex(f.subarray(start, start + size)), means]) {
+            const td = document.createElement('td');
+            td.textContent = val;
+            tr.append(td);
+          }
+          return tr;
+        }),
+      );
+      const body = f.subarray(HEADER);
+      payloadHex.textContent = hex(body.subarray(0, 24)) + (body.length > 24 ? ` … ${body.length - 24} more bytes` : '');
+    }
+
+    function transmit() {
+      if (timer) {
+        stop();
+        progress.textContent = 'Stopped.';
+        return;
+      }
+      const buttons = Array.from(list.querySelectorAll('button'));
+      buttons.forEach((b) => b.classList.remove('is-sent', 'is-sending'));
+      let i = 0;
+      send.textContent = 'Stop';
+      const tick = () => {
+        if (i > 0) buttons[i - 1].classList.replace('is-sending', 'is-sent');
+        if (i === buttons.length) {
+          stop();
+          progress.textContent = `Sent ${frames.length} of ${frames.length}. The bubble says “Sent”, not “Delivered”: nothing confirms a frame end to end.`;
+          msgId = (msgId + 1) & 0xffff;
+          return;
+        }
+        buttons[i].classList.add('is-sending');
+        i++;
+        progress.textContent = `Sending frame ${i} of ${frames.length}, ${((i * PACE_MS) / 1000).toFixed(1)} s`;
+      };
+      tick();
+      timer = window.setInterval(tick, PACE_MS);
+    }
+
+    el.addEventListener('change', (e) => {
+      if ((e.target as HTMLElement).matches('input[type="radio"]')) render();
+    });
+    let t: number | undefined;
+    text.addEventListener('input', () => {
+      window.clearTimeout(t);
+      t = window.setTimeout(render, 120);
+    });
+    list.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLButtonElement>('button[data-index]');
+      if (b) select(Number(b.dataset.index));
+    });
+    send.addEventListener('click', transmit);
+
+    render();
+  }
+</script>

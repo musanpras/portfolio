@@ -1,0 +1,109 @@
+---
+import { experience } from '../data/profile';
+---
+
+<section class="section" id="experience" aria-labelledby="experience-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="experience-title">Experience</h2>
+      <p>
+        From game development and project management to web, React Native, Flutter and now native Swift. Most
+        recent first.
+      </p>
+    </div>
+
+    <ol class="roles" role="list">
+      {
+        experience.map((job) => (
+          <li class="role">
+            <p class="when">
+              <time>{job.start}</time> to <time>{job.end}</time>
+            </p>
+            <div class="what">
+              <h3>{job.title}</h3>
+              <p class="where">
+                <strong>{job.company}</strong>
+                {job.companyNote && <span> ({job.companyNote})</span>}
+                <span class="muted"> in {job.location}</span>
+              </p>
+              <ul>
+                {job.points.map((point) => (
+                  <li>{point}</li>
+                ))}
+              </ul>
+              <p class="stack">{job.stack.join(', ')}</p>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .roles {
+    margin: 0;
+    display: grid;
+  }
+
+  .role {
+    display: grid;
+    gap: 0.5rem 2rem;
+    padding-block: 2rem;
+    border-top: 1px solid var(--rule);
+  }
+
+  .role:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  @media (min-width: 860px) {
+    .role {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
+    }
+  }
+
+  .when {
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-variant-numeric: tabular-nums;
+    padding-top: 0.2rem;
+  }
+
+  .what {
+    max-width: 46rem;
+  }
+
+  h3 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
+  .where {
+    margin-top: 0.25rem;
+  }
+
+  .where strong {
+    font-weight: 600;
+  }
+
+  ul {
+    list-style: disc;
+    margin-top: 0.9rem;
+    padding-left: 1.1rem;
+    display: grid;
+    gap: 0.45rem;
+    color: color-mix(in srgb, var(--ink) 84%, var(--paper));
+  }
+
+  ul li::marker {
+    color: var(--muted);
+  }
+
+  .stack {
+    margin-top: 0.9rem;
+    font-size: 0.88rem;
+    color: var(--muted);
+  }
+</style>

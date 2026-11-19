@@ -1,0 +1,84 @@
+---
+import '@fontsource-variable/schibsted-grotesk';
+import '@fontsource/ibm-plex-mono/400.css';
+import '@fontsource/ibm-plex-mono/500.css';
+import '../styles/global.css';
+import fontUrl from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
+import { profile } from '../data/profile';
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = `${profile.name}, iOS Engineer`,
+  description = 'iOS engineer in Bali building native apps in Swift and SwiftUI. Helped rebuild Tring! by Pegadaian (10M+ downloads), shipped Tripzee and Ttery to the App Store, and built an off-grid LoRa messenger.',
+  noindex = false,
+} = Astro.props;
+
+const path = Astro.url.pathname.replace(/(index)?\.html$/, '').replace(/\/$/, '') || '/';
+const canonical = new URL(path, Astro.site);
+const ogImage = new URL('/og.png', Astro.site);
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: profile.name,
+  alternateName: 'Muhammad Sandy Prastyo',
+  jobTitle: profile.role,
+  url: Astro.site?.toString(),
+  address: { '@type': 'PostalAddress', addressRegion: 'Bali', addressCountry: 'ID' },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: 'Universitas Riau' },
+  knowsAbout: ['Swift', 'SwiftUI', 'iOS', 'Core ML', 'Apple Foundation Models', 'CoreBluetooth'],
+  sameAs: [profile.links.linkedin, profile.links.github, profile.links.appStore],
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={profile.name} />
+    {noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+
+    <meta name="theme-color" content="#f1f3f0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d1525" media="(prefers-color-scheme: dark)" />
+    <link rel="preload" href={fontUrl} as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="M. Sandy Prastyo, iOS Engineer in Bali" />
+    <meta property="og:locale" content="en_US" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+
+    <script is:inline>
+      // Apply a saved theme before first paint so the page never flashes.
+      try {
+        var saved = localStorage.getItem('theme');
+        if (saved === 'light' || saved === 'dark') document.documentElement.dataset.theme = saved;
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,411 @@
+---
+import { Image } from 'astro:assets';
+import FrameDemo from './FrameDemo.astro';
+import ScreenStrip from './ScreenStrip.astro';
+
+import moraIcon from '../assets/icons/mora.png';
+import tripzeeIcon from '../assets/icons/tripzee.png';
+import tteryIcon from '../assets/icons/ttery.png';
+import saraIcon from '../assets/icons/sara.png';
+
+import tz1 from '../assets/shots/tripzee-1.jpg';
+import tz2 from '../assets/shots/tripzee-2.jpg';
+import tz3 from '../assets/shots/tripzee-3.jpg';
+import tz4 from '../assets/shots/tripzee-4.jpg';
+import tz5 from '../assets/shots/tripzee-5.jpg';
+import ttHome from '../assets/shots/ttery-home.jpg';
+import ttMarket from '../assets/shots/ttery-marketplace.jpg';
+import ttWarn from '../assets/shots/ttery-warning.jpg';
+
+const tripzeeShots = [
+  { src: tz1, alt: 'Tripzee App Store screenshot: plan your trip easily, with peace of mind.' },
+  { src: tz2, alt: 'Tripzee trip setup: destination, category and travel dates.' },
+  { src: tz3, alt: 'Tripzee packing record with a weather-aware checklist for a city tour.' },
+  { src: tz4, alt: 'Tripzee camera scan: spread items out and scan them all at once.' },
+  { src: tz5, alt: 'Tripzee trip summary comparing what was packed with what came back.' },
+];
+
+const tteryShots = [
+  { src: ttHome, alt: 'Ttery home screen: pick a task, with an energy battery bar and tasks like exercise, meal and shower.' },
+  { src: ttMarket, alt: 'Ttery market: tasks grouped into draining and energizing, such as cook, work, study and laundry.' },
+  { src: ttWarn, alt: 'Ttery warning: you do not have enough energy to do this task right now.' },
+];
+
+const external = (
+  `<svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4.5H4.5v11h11V12M11 4.5h4.5V9M15.5 4.5 9 11"/></svg>`
+);
+---
+
+<section class="section" id="work" aria-labelledby="work-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="work-title">Selected work</h2>
+      <p>
+        Five native iOS apps from Apple Developer Academy in 2026. Most of them do their thinking on the device,
+        so they keep working offline.
+      </p>
+    </div>
+
+    <ol class="projects" role="list">
+      <!-- Mora -->
+      <li class="project" id="mora">
+        <div class="info">
+          <div class="title">
+            <Image class="icon" src={moraIcon} alt="" width={128} height={128} />
+            <div>
+              <h3 translate="no">Mora</h3>
+              <p class="tagline">Off-grid messaging for disaster volunteers</p>
+            </div>
+          </div>
+          <p>
+            Volunteers on a mountain often have no cell signal. Mora lets their phones talk over LoRa radio: each
+            phone pairs with an ESP32 node over Bluetooth, and the node relays what it hears to everyone in range.
+          </p>
+          <p>
+            I designed the binary frame protocol. It splits text, photos and voice notes into small chunks, paces
+            them to what the radio can carry, and caps media at 8 KB so one phone can’t hold the channel for long.
+            The app also has SOS through App Intents and Shortcuts, HealthKit, location sharing and Core ML image
+            upscaling.
+          </p>
+          <dl class="meta">
+            <div><dt>Role</dt><dd>iOS developer, team project</dd></div>
+            <div><dt>Built with</dt><dd>Swift, SwiftUI, CoreBluetooth, LoRa and ESP32, App Intents, HealthKit, Core ML</dd></div>
+            <div><dt>Status</dt><dd>Distributed through TestFlight</dd></div>
+          </dl>
+        </div>
+        <div class="media">
+          <FrameDemo />
+        </div>
+      </li>
+
+      <!-- Tripzee -->
+      <li class="project" id="tripzee">
+        <div class="info">
+          <div class="title">
+            <Image class="icon" src={tripzeeIcon} alt="" width={128} height={128} />
+            <div>
+              <h3 translate="no">Tripzee</h3>
+              <p class="tagline">AI packing assistant</p>
+            </div>
+          </div>
+          <p>
+            Point the camera at your things and Tripzee knows what they are, fully offline. It runs MobileCLIP
+            zero-shot classification through Core ML with Vision saliency, so it needed no training data at all.
+          </p>
+          <p>
+            Packing lists adapt to the weather at your destination through WeatherKit, and you check items off by
+            scanning them, on the way out and again on the way home.
+          </p>
+          <dl class="meta">
+            <div><dt>Built with</dt><dd>SwiftUI, Core ML, Vision, MobileCLIP, WeatherKit</dd></div>
+            <div><dt>Status</dt><dd>Live on the App Store</dd></div>
+          </dl>
+          <p class="links">
+            <a class="btn btn--solid" href="https://apps.apple.com/id/app/tripzee-plan-your-trip-easily/id6786098866" target="_blank" rel="noopener">
+              View on the App Store <Fragment set:html={external} />
+            </a>
+            <a class="text-link" href="https://tripzee-topaz.vercel.app" target="_blank" rel="noopener">Privacy policy</a>
+          </p>
+        </div>
+        <div class="media">
+          <ScreenStrip label="Tripzee screenshots" shots={tripzeeShots} />
+        </div>
+      </li>
+
+      <!-- Ttery -->
+      <li class="project" id="ttery">
+        <div class="info">
+          <div class="title">
+            <Image class="icon" src={tteryIcon} alt="" width={128} height={128} />
+            <div>
+              <h3 translate="no">Ttery</h3>
+              <p class="tagline">Energy-based task planner</p>
+            </div>
+          </div>
+          <p>
+            Ttery treats your energy like a phone battery. Some tasks drain it, others recharge it, and the app
+            warns you before you pick something you don’t have the energy for.
+          </p>
+          <p>
+            I was the primary developer: MVVM with a service layer, SwiftData persistence, a Home Screen widget
+            built with WidgetKit, and recurring reminders.
+          </p>
+          <dl class="meta">
+            <div><dt>Role</dt><dd>Primary developer, team project</dd></div>
+            <div><dt>Built with</dt><dd>SwiftUI, SwiftData, WidgetKit, MVVM</dd></div>
+            <div><dt>Status</dt><dd>Live on the App Store</dd></div>
+          </dl>
+          <p class="links">
+            <a class="btn btn--solid" href="https://apps.apple.com/id/app/ttery/id6776476060" target="_blank" rel="noopener">
+              View on the App Store <Fragment set:html={external} />
+            </a>
+            <a class="text-link" href="https://ttery-navy.vercel.app" target="_blank" rel="noopener">Privacy policy</a>
+          </p>
+        </div>
+        <div class="media">
+          <ScreenStrip label="Ttery screenshots" shots={tteryShots} />
+        </div>
+      </li>
+
+      <!-- SARA -->
+      <li class="project" id="sara">
+        <div class="info">
+          <div class="title">
+            <Image class="icon icon--sara" src={saraIcon} alt="" width={128} height={128} />
+            <div>
+              <h3 translate="no">SARA</h3>
+              <p class="tagline">Voice assistant for Calendar and Reminders</p>
+            </div>
+          </div>
+          <p>
+            Say what you need and SARA turns it into calendar events and reminders. A deterministic local parser
+            handles the common commands with no model at all; Apple Foundation Models take the rest and propose a
+            typed plan.
+          </p>
+          <p>
+            The model never touches EventKit and is never asked for a date. Built as modular Swift Packages, with
+            domain tests that run on the host in under a second.
+          </p>
+          <dl class="meta">
+            <div><dt>Role</dt><dd>Solo project</dd></div>
+            <div><dt>Built with</dt><dd>Swift, SwiftUI, Foundation Models, EventKit, Speech, SwiftData, Swift Packages</dd></div>
+            <div><dt>Status</dt><dd>Open source on GitHub</dd></div>
+          </dl>
+          <p class="links">
+            <a class="btn btn--solid" href="https://github.com/musanpras/SARA" target="_blank" rel="noopener">
+              View source on GitHub <Fragment set:html={external} />
+            </a>
+          </p>
+        </div>
+        <div class="media">
+          <figure class="pipeline">
+            <figcaption>How a request moves through SARA</figcaption>
+            <ol role="list">
+              <li>
+                <span class="step">1</span>
+                <div><h4>AI proposes</h4><p>The local parser or the on-device model turns your words into a typed, versioned plan. No free text, no dates.</p></div>
+              </li>
+              <li>
+                <span class="step">2</span>
+                <div><h4>SARA validates</h4><p>Swift checks structure, targets, permissions and conflicts, and resolves “tomorrow at 4 pm” against your calendar and time zone.</p></div>
+              </li>
+              <li>
+                <span class="step">3</span>
+                <div><h4>EventKit executes</h4><p>Actions run in waves: dependents wait, failures skip. Deletions always ask you first.</p></div>
+              </li>
+              <li>
+                <span class="step">4</span>
+                <div><h4>SARA verifies</h4><p>Every write is read back before SARA says a word, so partial success is reported as partial.</p></div>
+              </li>
+            </ol>
+          </figure>
+        </div>
+      </li>
+    </ol>
+
+    <div class="also">
+      <h3>Also built</h3>
+      <p>
+        <strong>StockLearn</strong>, gamified stock-trading lessons in SwiftUI with quizzes and Swift Charts.
+        Earlier work includes Lillah in React Native, Telepandu and Vizta Gym in Flutter, and a shopping feature
+        for the Daeng Kurir delivery app.
+      </p>
+      <a class="text-link" href="https://github.com/musanpras" target="_blank" rel="noopener">More on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    display: grid;
+    gap: clamp(4rem, 3rem + 4vw, 7rem);
+    margin: 0;
+  }
+
+  .project {
+    display: grid;
+    gap: 2rem;
+    scroll-margin-top: 5rem;
+  }
+
+  @media (min-width: 960px) {
+    .project {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: clamp(2.5rem, 4vw, 4.5rem);
+      align-items: start;
+    }
+
+    .info {
+      position: sticky;
+      top: 6rem;
+    }
+  }
+
+  .info {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+    max-width: 34rem;
+  }
+
+  .info > p {
+    color: color-mix(in srgb, var(--ink) 84%, var(--paper));
+  }
+
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .title :global(.icon) {
+    width: 64px;
+    height: 64px;
+    flex: none;
+    border-radius: var(--radius-icon);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
+  }
+
+  .title :global(.icon--sara) {
+    background: #1d1452;
+  }
+
+  h3 {
+    font-size: var(--step-2);
+    letter-spacing: -0.025em;
+  }
+
+  .tagline {
+    color: var(--muted);
+  }
+
+  .meta {
+    display: grid;
+    gap: 0.45rem;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--rule);
+    font-size: 0.92rem;
+  }
+
+  .meta div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1rem;
+  }
+
+  .meta dt {
+    color: var(--muted);
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    margin-top: 0.5rem;
+  }
+
+  .text-link {
+    font-size: 0.95rem;
+    font-weight: 550;
+  }
+
+  .media {
+    min-width: 0;
+  }
+
+  /* SARA pipeline: a real sequence, so the steps are numbered */
+  .pipeline {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 20px;
+    padding: clamp(1.1rem, 0.8rem + 1.5vw, 1.75rem);
+  }
+
+  .pipeline figcaption {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 1.25rem;
+  }
+
+  .pipeline ol {
+    margin: 0;
+    display: grid;
+    gap: 0;
+  }
+
+  .pipeline li {
+    position: relative;
+    display: grid;
+    grid-template-columns: 2.25rem 1fr;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .pipeline li:last-child {
+    padding-bottom: 0;
+  }
+
+  .pipeline li:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: calc(1.125rem - 0.5px);
+    top: 2.4rem;
+    bottom: 0.3rem;
+    width: 1px;
+    background: var(--rule);
+  }
+
+  .step {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    border: 1px solid var(--ink);
+    font-weight: 600;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .pipeline li:last-child .step {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .pipeline h4 {
+    font-size: 1.05rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    margin: 0.35rem 0 0.2rem;
+  }
+
+  .pipeline p {
+    color: var(--muted);
+    font-size: 0.95rem;
+    max-width: 34rem;
+  }
+
+  .also {
+    display: grid;
+    gap: 0.6rem;
+    margin-top: clamp(4rem, 3rem + 4vw, 6rem);
+    padding-top: 2rem;
+    border-top: 1px solid var(--rule);
+    max-width: 44rem;
+  }
+
+  .also h3 {
+    font-size: var(--step-1);
+  }
+
+  .also p {
+    color: color-mix(in srgb, var(--ink) 84%, var(--paper));
+  }
+
+  .also a {
+    justify-self: start;
+  }
+</style>

@@ -1,0 +1,131 @@
+---
+import { skills, education, awards, languages } from '../data/profile';
+---
+
+<section class="section" id="skills" aria-labelledby="skills-title">
+  <div class="wrap">
+    <div class="section-head">
+      <h2 id="skills-title">Skills</h2>
+      <p>Native Apple platforms first, with enough web and cross-platform experience to work well with the rest of a product team.</p>
+    </div>
+
+    <div class="groups">
+      {
+        skills.map((g) => (
+          <div class="group">
+            <h3>{g.group}</h3>
+            <ul role="list">
+              {g.items.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+
+    <div class="background" aria-label="Education, awards and languages">
+      <div>
+        <h3>Education</h3>
+        <p><strong>{education.degree}</strong></p>
+        <p class="muted">{education.school}, {education.start} to {education.end}</p>
+      </div>
+      <div>
+        <h3>Awards</h3>
+        <ul role="list" class="awards">
+          {
+            awards.map((a) => (
+              <li>
+                <p><strong>{a.title}</strong></p>
+                <p class="muted">
+                  {a.date}. {a.detail}
+                </p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div>
+        <h3>Languages</h3>
+        <ul role="list" class="langs">
+          {
+            languages.map((l) => (
+              <li>
+                <p><strong>{l.name}</strong></p>
+                <p class="muted">{l.level}</p>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .groups {
+    display: grid;
+    gap: 2rem 3rem;
+  }
+
+  @media (min-width: 640px) {
+    .groups {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .groups {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  h3 {
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.005em;
+    margin-bottom: 0.6rem;
+    padding-bottom: 0.6rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .group ul {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem 0;
+    color: color-mix(in srgb, var(--ink) 84%, var(--paper));
+  }
+
+  .group li:not(:last-child)::after {
+    content: ',';
+    margin-right: 0.35em;
+  }
+
+  .background {
+    display: grid;
+    gap: 2.5rem 3rem;
+    margin-top: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  }
+
+  @media (min-width: 860px) {
+    .background {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .background strong {
+    font-weight: 600;
+  }
+
+  .background p {
+    font-size: 0.97rem;
+  }
+
+  .awards,
+  .langs {
+    margin: 0;
+    display: grid;
+    gap: 0.9rem;
+  }
+</style>

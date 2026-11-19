@@ -1,0 +1,164 @@
+---
+import { profile } from '../data/profile';
+
+const channels = [
+  { label: 'LinkedIn', value: 'muhammad-sandy-prastyo', href: profile.links.linkedin },
+  { label: 'GitHub', value: 'musanpras', href: profile.links.github },
+  { label: 'App Store', value: 'Developer page', href: profile.links.appStore },
+  { label: 'WhatsApp', value: profile.phone, href: profile.phoneHref },
+];
+---
+
+<section class="section contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <h2 id="contact-title">Hiring an iOS engineer? Let’s talk.</h2>
+    <p class="lead">
+      I’m looking for my next iOS role and I’m glad to relocate. Email is the fastest way to reach me.
+    </p>
+
+    <div class="email-row">
+      <a class="email" href={`mailto:${profile.email}`}>{profile.email}</a>
+      <button class="btn" type="button" data-copy={profile.email}>
+        <svg viewBox="0 0 20 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"
+          ><rect x="6.5" y="6.5" width="10" height="10" rx="2"></rect><path d="M13.5 6.5V5a1.5 1.5 0 0 0-1.5-1.5H5A1.5 1.5 0 0 0 3.5 5v7A1.5 1.5 0 0 0 5 13.5h1.5"></path></svg
+        >
+        <span data-copy-label>Copy email</span>
+      </button>
+      <span class="visually-hidden" role="status" data-copy-status></span>
+    </div>
+
+    <ul class="channels" role="list">
+      {
+        channels.map((c) => (
+          <li>
+            <a href={c.href} target="_blank" rel="noopener me">
+              <span class="label">{c.label}</span>
+              <span class="value">{c.value}</span>
+            </a>
+          </li>
+        ))
+      }
+      <li>
+        <a href={profile.resume} download>
+          <span class="label">Résumé</span>
+          <span class="value">Download PDF</span>
+        </a>
+      </li>
+    </ul>
+
+    <p class="where muted">Based in {profile.location}, UTC+8.</p>
+  </div>
+</section>
+
+<style>
+  h2 {
+    font-size: var(--step-hero);
+    letter-spacing: -0.042em;
+    line-height: 1;
+    max-width: 13ch;
+  }
+
+  .lead {
+    margin-top: 1.5rem;
+    max-width: 34rem;
+    font-size: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
+    color: color-mix(in srgb, var(--ink) 82%, var(--paper));
+  }
+
+  .email-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.5rem;
+    margin-top: clamp(2rem, 1.5rem + 2vw, 3rem);
+  }
+
+  .email {
+    font-size: clamp(1.15rem, 0.8rem + 1.9vw, 2.1rem);
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+    text-decoration-color: var(--accent);
+  }
+
+  .channels {
+    display: grid;
+    margin: clamp(2.5rem, 2rem + 2vw, 4rem) 0 0;
+    border-top: 1px solid var(--rule);
+  }
+
+  @media (min-width: 760px) {
+    .channels {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+
+    .channels li + li a {
+      border-left: 1px solid var(--rule);
+      padding-left: 1rem;
+    }
+  }
+
+  .channels a {
+    display: grid;
+    gap: 0.15rem;
+    padding: 1rem 0;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    height: 100%;
+  }
+
+  .channels a:hover .value {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .label {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+
+  .value {
+    font-weight: 550;
+    overflow-wrap: anywhere;
+  }
+
+  .where {
+    margin-top: 1.5rem;
+    font-size: 0.95rem;
+  }
+</style>
+
+<script>
+  const button = document.querySelector<HTMLButtonElement>('[data-copy]');
+  const label = button?.querySelector<HTMLElement>('[data-copy-label]');
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+  let reset: number | undefined;
+
+  button?.addEventListener('click', async () => {
+    const email = button.dataset.copy ?? '';
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(email);
+      ok = true;
+    } catch {
+      // Clipboard can be blocked (insecure context, permissions); fall back to selecting the text.
+      const range = document.createRange();
+      const link = document.querySelector('.email');
+      if (link) {
+        range.selectNodeContents(link);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      }
+    }
+    if (label) label.textContent = ok ? 'Copied' : 'Selected, copy it now';
+    if (status) status.textContent = ok ? 'Email address copied to clipboard' : 'Email address selected';
+    window.clearTimeout(reset);
+    reset = window.setTimeout(() => {
+      if (label) label.textContent = 'Copy email';
+      if (status) status.textContent = '';
+    }, 2200);
+  });
+</script>
