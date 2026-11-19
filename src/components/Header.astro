@@ -1,4 +1,6 @@
 ---
+import AppleMark from './AppleMark.astro';
+
 const nav = [
   { href: '#work', label: 'Work' },
   { href: '#experience', label: 'Experience' },
@@ -10,12 +12,7 @@ const nav = [
 <header class="site-header" data-header>
   <div class="wrap bar">
     <a class="brand" href="#top" aria-label="Sandy Prastyo, back to top">
-      <svg class="brand-mark" viewBox="0 0 22 16" aria-hidden="true">
-        <rect x="0" y="10" width="4" height="6" rx="1"></rect>
-        <rect x="6" y="6.5" width="4" height="9.5" rx="1"></rect>
-        <rect x="12" y="3" width="4" height="13" rx="1"></rect>
-        <rect class="hot" x="18" y="0" width="4" height="16" rx="1"></rect>
-      </svg>
+      <AppleMark class="brand-mark" />
       <span>Sandy Prastyo</span>
     </a>
 
@@ -80,14 +77,10 @@ const nav = [
     white-space: nowrap;
   }
 
-  .brand-mark {
-    width: 22px;
-    height: 16px;
-    fill: var(--ink);
-  }
-
-  .brand-mark .hot {
-    fill: var(--accent);
+  .brand :global(.brand-mark) {
+    width: 20px;
+    height: 20px;
+    flex: none;
   }
 
   nav ul {

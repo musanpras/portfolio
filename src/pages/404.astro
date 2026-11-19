@@ -1,16 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
+import AppleMark from '../components/AppleMark.astro';
 ---
 
 <Base title="Page not found, M. Sandy Prastyo" noindex>
   <main id="main" class="wrap nf">
-    <svg class="bars" viewBox="0 0 22 16" aria-hidden="true">
-      <rect x="0" y="10" width="4" height="6" rx="1"></rect>
-      <rect class="off" x="6" y="6.5" width="4" height="9.5" rx="1"></rect>
-      <rect class="off" x="12" y="3" width="4" height="13" rx="1"></rect>
-      <rect class="off" x="18" y="0" width="4" height="16" rx="1"></rect>
-    </svg>
-    <h1>No signal here.</h1>
+    <AppleMark class="mark" />
+    <h1>Nothing here.</h1>
     <p>This page doesn’t exist, or it moved. The portfolio is one page, so everything is on the home page.</p>
     <a class="btn btn--solid" href="/">Go to the home page</a>
   </main>
@@ -25,14 +21,9 @@ import Base from '../layouts/Base.astro';
     gap: 1.25rem;
   }
 
-  .bars {
+  .nf :global(.mark) {
     width: 44px;
-    height: 32px;
-    fill: var(--ink);
-  }
-
-  .bars .off {
-    fill: var(--signal-off);
+    height: 44px;
   }
 
   h1 {

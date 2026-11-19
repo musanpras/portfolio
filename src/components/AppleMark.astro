@@ -1,0 +1,30 @@
+---
+// Original apple-fruit mark (not Apple Inc.'s logo: no bite, has a stem).
+interface Props {
+  class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<svg class:list={['apple-mark', className]} viewBox="0 0 24 24" aria-hidden="true">
+  <path
+    class="body"
+    d="M12 7.4C10.6 6.4 8.9 6 7.3 6.5 4.5 7.4 3.3 10.5 3.9 13.7c.6 3.4 2.9 7 5.4 7.3 1 .1 1.7-.4 2.7-.4s1.7.5 2.7.4c2.5-.3 4.8-3.9 5.4-7.3.6-3.2-.6-6.3-3.4-7.2C15.1 6 13.4 6.4 12 7.4Z"
+  ></path>
+  <path class="leaf" d="M12.6 5.9c.1-2.1 1.8-3.5 4.2-3.4-.2 2.1-1.9 3.4-4.2 3.4Z"></path>
+  <path class="stem" d="M12 7.4c-.1-1.5.2-2.9 1-4.1" fill="none" stroke-width="1.2" stroke-linecap="round"></path>
+</svg>
+
+<style>
+  .apple-mark .body {
+    fill: var(--accent);
+  }
+
+  .apple-mark .leaf {
+    fill: var(--ink);
+  }
+
+  .apple-mark .stem {
+    stroke: var(--ink);
+  }
+</style>
